@@ -1,30 +1,24 @@
 package ms.syrup.wz.viewer;
 
 import ms.syrup.wz.io.WzFile;
-import ms.syrup.wz.io.data.*;
+import ms.syrup.wz.io.data.WzAbstractExtendedData;
+import ms.syrup.wz.io.data.WzData;
+import ms.syrup.wz.io.data.WzVector;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class WzTreeModel implements TreeModel {
 
     private final WzTreeRoot root;
 
-    private boolean sort = true;
-
     public WzTreeModel() {
         this.root = new WzTreeRoot();
-    }
-
-    public boolean isSorted() {
-        return this.sort;
-    }
-
-    public void sort(final boolean sort) {
-        this.sort = sort;
     }
 
     @Override
@@ -43,33 +37,26 @@ public class WzTreeModel implements TreeModel {
         } else return !(o instanceof WzAbstractExtendedData);
     }
 
-    private List<WzData> getChildren(final Object o) {
+    private List<WzData> getChildren(final WzData o) {
         try {
-            if (o instanceof WzData) {
-                final Map<String, WzData> children = ((WzData) o).children();
-                if (children != null) {
-                    final List<WzData> c = new ArrayList<>(children.values());
-
-                    if (this.sort && !(((WzData) o).label().startsWith("zmap") || ((WzData) o).label().startsWith("smap"))) {
-                        //Collections.sort(c, (WzData t, WzData t1) -> String.CASE_INSENSITIVE_ORDER.compare(t.label(), t1.label()));
-                        Collections.sort(c, new NaturalOrderComparator());
-                    }
-                    return c;
-                }
+            final var children = o.children();
+            final var c = new ArrayList<>(children.values());
+            final var lbl = o.label();
+            if (!lbl.startsWith("zmap") && !lbl.startsWith("smap")) {
+                c.sort(new WzComparator());
             }
+            return c;
         } catch (final IOException ioe) {
             ioe.printStackTrace();
         }
-        return null;
+        // noinspection unchecked
+        return Collections.EMPTY_LIST;
     }
 
     @Override
     public Object getChild(final Object o, final int i) {
         if (o instanceof WzData) {
-            final List<WzData> children = this.getChildren(o);
-            if (children != null) {
-                return children.get(i);
-            }
+            return this.getChildren((WzData) o).get(i);
         }
         return null;
     }
@@ -77,10 +64,7 @@ public class WzTreeModel implements TreeModel {
     @Override
     public int getChildCount(final Object o) {
         if (o instanceof WzData) {
-            final List<WzData> children = this.getChildren(o);
-            if (children != null) {
-                return children.size();
-            }
+            return this.getChildren((WzData) o).size();
         }
         return 0;
     }
@@ -88,10 +72,7 @@ public class WzTreeModel implements TreeModel {
     @Override
     public int getIndexOfChild(final Object parent, final Object child) {
         if (parent instanceof WzData && child instanceof WzData) {
-            final List<WzData> children = this.getChildren(parent);
-            if (children != null) {
-                return children.indexOf(child);
-            }
+            return this.getChildren((WzData) parent).indexOf(child);
         }
         return -1;
     }

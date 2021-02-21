@@ -1,7 +1,5 @@
 package ms.syrup.wz.viewer;
 
-import com.github.weisj.darklaf.LafManager;
-import com.github.weisj.darklaf.theme.DarculaTheme;
 import ms.syrup.wz.io.WzDecoder;
 import ms.syrup.wz.io.WzFile;
 import ms.syrup.wz.io.data.WzCanvas;
@@ -12,11 +10,7 @@ import javax.swing.event.TreeSelectionEvent;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Viewer extends JFrame {
 

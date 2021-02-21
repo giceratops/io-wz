@@ -37,11 +37,6 @@ public class WzTree extends JTree implements MouseListener {
         return this.model;
     }
 
-    public void sort(final boolean sort) {
-        this.model.sort(sort);
-        super.updateUI();
-    }
-
     @Override
     public void mouseClicked(MouseEvent e) {
     }

@@ -1,8 +1,10 @@
 package ms.syrup.wz.viewer;
 
+import ms.syrup.wz.io.data.WzData;
+
 import java.util.*;
 
-public class NaturalOrderComparator implements Comparator<Object> {
+public class WzComparator implements Comparator<WzData> {
     int compareRight(String a, String b) {
         int bias = 0, ia = 0, ib = 0;
 
@@ -38,12 +40,12 @@ public class NaturalOrderComparator implements Comparator<Object> {
     }
 
     @Override
-    public int compare(Object o1, Object o2) {
-        String a = o1.toString();
-        String b = o2.toString();
+    public int compare(WzData o1, WzData o2) {
+        final var a = o1.label();
+        final var b = o2.label();;
 
         int ia = 0, ib = 0;
-        int nza = 0, nzb = 0;
+        int nza, nzb;
         char ca, cb;
 
         while (true) {

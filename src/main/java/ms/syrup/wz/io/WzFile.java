@@ -228,4 +228,9 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
             default -> throw new IOException("Unknown dataType String: " + dataType);
         };
     }
+
+    @Override
+    public String toString() {
+        return "WzFile(root="+this.root.toString()+")";
+    }
 }

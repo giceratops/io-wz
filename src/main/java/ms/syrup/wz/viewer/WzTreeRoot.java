@@ -13,7 +13,7 @@ public class WzTreeRoot extends WzAbstractData {
     private final Map<String, WzData> children;
 
     public WzTreeRoot() {
-        super(WzDataType.DIRECTORY, "WzDirectory");
+        super(WzDataType.DIRECTORY, "WzTreeRoot");
         this.children = new HashMap<>();
     }
 
