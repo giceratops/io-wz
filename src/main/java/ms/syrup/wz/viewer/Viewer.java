@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -74,7 +75,7 @@ public class Viewer extends JFrame {
     public void open(final String folder) throws Exception {
         final var dir = new File(folder);
         final var decoder = WzDecoder.fromZLZ(new File(dir, "ZLZ.dll"));
-        for (var file : dir.listFiles((dir1, name) -> name.endsWith(".wz") && !name.contains("List"))) {
+        for (var file : Objects.requireNonNull(dir.listFiles((dir1, name) -> name.endsWith(".wz") && !name.contains("List")))) {
             this.tree.getModel().getRoot().addChild(new WzFile(file, decoder));
         }
         this.tree.updateUI();
