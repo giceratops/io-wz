@@ -60,7 +60,7 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
                 case 0 -> new WzNull();
                 case 2, 11 -> new WzShort(reader.readShort());
                 case 3, 19 -> new WzInteger(reader.readCompressedInt());
-                case 4 -> new WzFloat(reader.readByte() == Byte.MAX_VALUE ? reader.readFloat() : 0f);
+                case 4 -> new WzFloat(reader.readByte() == Byte.MIN_VALUE ? reader.readFloat() : 0f);
                 case 20 -> new WzLong(reader.readLong());
                 case 5 -> new WzDouble(reader.readDouble());
                 case 8 -> new WzString(reader.readStringBlock(imgOffset));
