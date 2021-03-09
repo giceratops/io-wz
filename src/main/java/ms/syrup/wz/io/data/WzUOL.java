@@ -12,7 +12,7 @@ public class WzUOL extends WzAbstractData {
     @Getter @Setter
     private String value;
 
-    public WzUOL(final String value) {
+    public WzUOL(final byte b, final String value) {
         this(null, value);
     }
 

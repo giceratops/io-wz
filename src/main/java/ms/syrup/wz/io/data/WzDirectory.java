@@ -13,12 +13,14 @@ public class WzDirectory extends WzAbstractExtendedData {
     private final int checksum;
 
     public WzDirectory(final WzFile parent, final String label) {
-        super(WzDataType.DIRECTORY, parent, label, parent.header().fileStart(), (parent.header().indexStart() - parent.header().fileStart()));
+        super(WzDataType.DIRECTORY, parent, label);
+        super.dataStart(parent.header().fileStart() + (parent.header().indexStart() - parent.header().fileStart()));
         this.checksum = 0;
     }
 
     public WzDirectory(final WzData parent, final String label, final int offset, final int checksum) {
-        super(WzDataType.DIRECTORY, parent, label, offset, 0);
+        super(WzDataType.DIRECTORY, parent, label);
+        super.dataStart(offset);
         this.checksum = checksum;
     }
 

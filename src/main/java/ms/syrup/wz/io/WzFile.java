@@ -1,5 +1,6 @@
 package ms.syrup.wz.io;
 
+import lombok.Getter;
 import ms.syrup.wz.io.data.*;
 import ms.syrup.wz.io.util.RandomLittleEndianAccessFile;
 
@@ -12,9 +13,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     private final WzDecoder decoder;
-    private final WzHeader header;
     private final WzDirectory root;
-    private final Lock readLock;
+    @Getter private final WzHeader header;
+    @Getter private final Lock readLock;
 
     public WzFile(final String filePath, final WzDecoder decoder) throws IOException {
         this(new File(filePath), decoder);
@@ -26,18 +27,6 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         this.header = new WzHeader().read(WzFile.this);
         this.root = new WzDirectory(WzFile.this, file.getName());
         this.readLock = new ReentrantLock();
-    }
-
-    public WzDirectory root() {
-        return this.root;
-    }
-
-    public WzHeader header() {
-        return this.header;
-    }
-
-    public Lock readLock() {
-        return this.readLock;
     }
 
     @Override
@@ -66,7 +55,7 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     @Override
-    public String fullPath(){
+    public String fullPath() {
         return this.root.fullPath();
     }
 
@@ -182,8 +171,8 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     public String readStringBlock(final long offset) throws IOException {
         return switch (super.readByte()) {
-            case 0, 0x73 -> this.readEncodedString();
-            case 1, 0x1B -> this.readEncodedStringAtAndReset(offset + super.readInt());
+            case 0x00, 0x73 -> this.readEncodedString();
+            case 0x01, 0x1B -> this.readEncodedStringAtAndReset(offset + super.readInt());
             default -> "";
         };
     }
@@ -201,36 +190,21 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public WzAbstractData readExtendedWzData(final WzImg img) throws IOException {
-        final var currentFP = (int) this.getFilePointer();
-        final var extendedType = this.readByte();
-        final var dataType = switch (extendedType) {
-            case 0x00, 0x73 -> this.readEncodedString();
-            case 0x01, 0x1B -> this.readEncodedStringAtAndReset(img.offset() + this.readInt());
-            default -> throw new IOException("Unknown dataType byte: " + extendedType);
-        };
-        final var dataOffset = (int) (this.getFilePointer() - currentFP);
+        final var dataType = readStringBlock(img.dataStart());
+        final var currentFP = this.getFilePointer();
         return switch (dataType) {
-            case "Property" -> new WzProperty(currentFP, dataOffset);
-            case "Canvas" -> new WzCanvas(currentFP, dataOffset);
-            case "Shape2D#Vector2D" -> new WzVector(currentFP, dataOffset);
-            case "Shape2D#Convex2D" -> new WzConvex(currentFP, dataOffset);
-            case "Sound_DX8" -> new WzSound(currentFP, dataOffset);
-            case "UOL" -> {
-                this.readByte();
-                final byte type = this.readByte();
-                final var uol = switch (type) {
-                    case 0 -> this.readEncodedString();
-                    case 1 -> this.readEncodedStringAtAndReset(img.offset() + this.readInt());
-                    default -> throw new IOException("Invalid byte for UOL: " + type);
-                };
-                yield new WzUOL(uol);
-            }
+            case "Property" -> new WzProperty().dataStart(currentFP);
+            case "Canvas" -> new WzCanvas().dataStart(currentFP);
+            case "Shape2D#Vector2D" -> new WzVector().dataStart(currentFP);
+            case "Shape2D#Convex2D" -> new WzConvex().dataStart(currentFP);
+            case "Sound_DX8" -> new WzSound().dataStart(currentFP);
+            case "UOL" -> new WzUOL(this.readByte(), this.readStringBlock(img.dataStart()));
             default -> throw new IOException("Unknown dataType String: " + dataType);
         };
     }
 
     @Override
     public String toString() {
-        return "WzFile(root="+this.root.toString()+")";
+        return "WzFile(root=" + this.root.toString() + ")";
     }
 }

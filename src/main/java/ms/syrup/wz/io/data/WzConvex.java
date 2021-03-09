@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class WzConvex extends WzAbstractExtendedData {
 
-    public WzConvex(final int offset, final int dataOffset) {
-        super(WzDataType.CONVEX, offset, dataOffset);
+    public WzConvex() {
+        super(WzDataType.CONVEX);
     }
 
     @Override

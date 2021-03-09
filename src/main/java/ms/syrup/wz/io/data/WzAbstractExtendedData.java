@@ -1,6 +1,7 @@
 package ms.syrup.wz.io.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
@@ -11,21 +12,18 @@ import java.util.Optional;
 
 public abstract class WzAbstractExtendedData extends WzAbstractData {
 
-    @Getter
-    private final long offset;
-    private final int dataOffset;
-    private final Map<String, WzData> children;
+    protected final Map<String, WzData> children;
 
+    @Getter @Setter
+    private long dataStart;
     private boolean read;
 
-    public WzAbstractExtendedData(final WzDataType type, final int offset, final int dataOffset) {
-        this(type, null, null, offset, dataOffset);
+    public WzAbstractExtendedData(final WzDataType type) {
+        this(type, null, null);
     }
 
-    public WzAbstractExtendedData(final WzDataType type, final WzData parent, final String label, final int offset, final int dataOffset) {
+    public WzAbstractExtendedData(final WzDataType type, final WzData parent, final String label) {
         super(type, parent, label);
-        this.offset = offset;
-        this.dataOffset = dataOffset;
         this.children = new LinkedHashMap<>();
     }
 
@@ -39,7 +37,7 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
         try {
             lock.lock();
             if (!this.read) {
-                this.read(file.seek(this.offset() + this.dataOffset));
+                this.read(file.seek(this.dataStart()));
                 this.read = true;
             }
         } catch (final IOException ioe) {
@@ -51,7 +49,7 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
 
     public void parseChildren(final WzFile reader) throws IOException {
         final var img = this.getImg();
-        final var imgOffset = img.offset();
+        final var imgOffset = img.dataStart();
         final var entryCount = reader.readCompressedInt();
         for (var i = 0; i < entryCount; i++) {
             final var lbl = reader.readStringBlock(imgOffset);

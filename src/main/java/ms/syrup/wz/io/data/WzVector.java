@@ -12,8 +12,8 @@ public class WzVector extends WzAbstractExtendedData {
 
     private Point point;
 
-    public WzVector(final int offset, final int dataOffset) {
-        super(WzDataType.VECTOR, offset, dataOffset);
+    public WzVector() {
+        super(WzDataType.VECTOR);
     }
 
     @Override
