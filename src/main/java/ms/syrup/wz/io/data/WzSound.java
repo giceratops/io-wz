@@ -10,8 +10,8 @@ import java.io.IOException;
 @EqualsAndHashCode(callSuper = true)
 public class WzSound extends WzAbstractExtendedData {
 
-    public WzSound() {
-        super(WzDataType.SOUND);
+    public WzSound(final String label) {
+        super(WzDataType.SOUND, label);
     }
 
     @Override

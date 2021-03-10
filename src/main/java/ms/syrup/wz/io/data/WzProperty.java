@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class WzProperty extends WzAbstractExtendedData {
 
-    public WzProperty() {
-        super(WzDataType.PROPERTY);
+    public WzProperty(final String label) {
+        super(WzDataType.PROPERTY, label);
     }
 
     @Override

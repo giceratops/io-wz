@@ -7,6 +7,7 @@ import ms.syrup.wz.io.data.WzDataType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class WzTreeRoot extends WzAbstractData {
 
@@ -14,7 +15,7 @@ public class WzTreeRoot extends WzAbstractData {
 
     public WzTreeRoot() {
         super(WzDataType.DIRECTORY, "WzTreeRoot");
-        this.children = new HashMap<>();
+        this.children = new TreeMap<>(new WzLabelComparator());
     }
 
     public void addChild(final WzFile f) {

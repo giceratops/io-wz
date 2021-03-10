@@ -189,22 +189,22 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         return Integer.toUnsignedLong(offset);
     }
 
-    public WzAbstractData readExtendedWzData(final WzImg img) throws IOException {
+    public WzAbstractData readExtendedWzData(final WzImg img, final String label) throws IOException {
         final var dataType = readStringBlock(img.dataStart());
         final var currentFP = this.getFilePointer();
         return switch (dataType) {
-            case "Property" -> new WzProperty().dataStart(currentFP);
-            case "Canvas" -> new WzCanvas().dataStart(currentFP);
-            case "Shape2D#Vector2D" -> new WzVector().dataStart(currentFP);
-            case "Shape2D#Convex2D" -> new WzConvex().dataStart(currentFP);
-            case "Sound_DX8" -> new WzSound().dataStart(currentFP);
-            case "UOL" -> new WzUOL(this.readByte(), this.readStringBlock(img.dataStart()));
+            case "Property" -> new WzProperty(label).dataStart(currentFP);
+            case "Canvas" -> new WzCanvas(label).dataStart(currentFP);
+            case "Shape2D#Vector2D" -> new WzVector(label).dataStart(currentFP);
+            case "Shape2D#Convex2D" -> new WzConvex(label).dataStart(currentFP);
+            case "Sound_DX8" -> new WzSound(label).dataStart(currentFP);
+            case "UOL" -> new WzUOL(label, this.readByte(), this.readStringBlock(img.dataStart()));
             default -> throw new IOException("Unknown dataType String: " + dataType);
         };
     }
 
     @Override
     public String toString() {
-        return "WzFile(root=" + this.root.toString() + ")";
+        return String.format("WzFile(root=%s)", this.root);
     }
 }

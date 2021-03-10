@@ -12,8 +12,8 @@ public class WzUOL extends WzAbstractData {
     @Getter @Setter
     private String value;
 
-    public WzUOL(final byte b, final String value) {
-        this(null, value);
+    public WzUOL(final String label, final byte b, final String value) {
+        this(label, value);
     }
 
     public WzUOL(final String label, final String value) {

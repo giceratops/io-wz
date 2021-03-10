@@ -12,8 +12,8 @@ public class WzVector extends WzAbstractExtendedData {
 
     private Point point;
 
-    public WzVector() {
-        super(WzDataType.VECTOR);
+    public WzVector(final String label) {
+        super(WzDataType.VECTOR, label);
     }
 
     @Override

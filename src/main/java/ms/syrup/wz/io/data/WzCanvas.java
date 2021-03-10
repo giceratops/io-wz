@@ -20,8 +20,8 @@ public class WzCanvas extends WzAbstractExtendedData {
     private byte scale;
     private BufferedImage image;
 
-    public WzCanvas() {
-        super(WzDataType.CANVAS);
+    public WzCanvas(final String label) {
+        super(WzDataType.CANVAS, label);
     }
 
     @Override

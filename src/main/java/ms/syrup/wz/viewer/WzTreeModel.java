@@ -43,7 +43,7 @@ public class WzTreeModel implements TreeModel {
             final var c = new ArrayList<>(children.values());
             final var lbl = o.label();
             if (!lbl.startsWith("zmap") && !lbl.startsWith("smap")) {
-                c.sort(new WzComparator());
+                //c.sort(new WzComparator());
             }
             return c;
         } catch (final IOException ioe) {

@@ -6,8 +6,8 @@ import java.io.IOException;
 
 public class WzConvex extends WzAbstractExtendedData {
 
-    public WzConvex() {
-        super(WzDataType.CONVEX);
+    public WzConvex(final String label) {
+        super(WzDataType.CONVEX, label);
     }
 
     @Override
@@ -15,7 +15,7 @@ public class WzConvex extends WzAbstractExtendedData {
         final var img = super.getImg();
         final int entryCount = reader.readCompressedInt();
         for (int i = 0; i < entryCount; i++) {
-            final var child = reader.readExtendedWzData(img);
+            final var child = reader.readExtendedWzData(img, null);
             this.addChild(child);
         }
         return this;
