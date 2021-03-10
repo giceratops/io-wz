@@ -4,8 +4,12 @@ import lombok.Getter;
 import ms.syrup.wz.io.data.*;
 import ms.syrup.wz.io.util.RandomLittleEndianAccessFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -112,6 +116,30 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
             l = this.readLong();
         }
         return l;
+    }
+
+    public byte[] readEncodedBytes(final int length) throws IOException {
+        System.out.println(Arrays.toString(this.readFully(length)));
+        this.skip(-length);
+
+        System.out.println(" length = " + length);
+        try (final var baos = new ByteArrayOutputStream()) {
+            var read = 0;
+            while (read < length) {
+                var blockSize = this.readInt();
+                System.out.println(blockSize);
+                read += Integer.BYTES;
+                if (blockSize > length - read || blockSize < 0) {
+                    throw new IOException("Block size for reading buffer is wrong: " + blockSize);
+                }
+
+                for (var i = 0; i < blockSize; i++) {
+                    baos.write(this.readByte() ^ decoder.get(i));
+                    read++;
+                }
+            }
+            return baos.toByteArray();
+        }
     }
 
     public String readEncodedString() throws IOException {
