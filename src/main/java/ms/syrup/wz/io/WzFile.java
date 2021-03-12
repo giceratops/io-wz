@@ -119,15 +119,10 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public byte[] readEncodedBytes(final int length) throws IOException {
-        System.out.println(Arrays.toString(this.readFully(length)));
-        this.skip(-length);
-
-        System.out.println(" length = " + length);
         try (final var baos = new ByteArrayOutputStream()) {
             var read = 0;
             while (read < length) {
                 var blockSize = this.readInt();
-                System.out.println(blockSize);
                 read += Integer.BYTES;
                 if (blockSize > length - read || blockSize < 0) {
                     throw new IOException("Block size for reading buffer is wrong: " + blockSize);

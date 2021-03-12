@@ -3,7 +3,6 @@ package ms.syrup.wz.io.data;
 import lombok.Getter;
 import lombok.Setter;
 import ms.syrup.wz.io.WzFile;
-import ms.syrup.wz.viewer.WzLabelComparator;
 
 import java.io.IOException;
 import java.util.*;
