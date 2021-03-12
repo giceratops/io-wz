@@ -12,10 +12,6 @@ public class WzFloat extends WzAbstractData {
     @Getter @Setter
     private float value;
 
-    public WzFloat(final float value) {
-        this(null, value);
-    }
-
     public WzFloat(final String label, final float value) {
         super(WzDataType.FLOAT, label);
         this.value = value;

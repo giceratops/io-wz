@@ -13,8 +13,8 @@ public class WzConvex extends WzAbstractExtendedData {
     @Override
     protected WzConvex read(final WzFile reader) throws IOException {
         final var img = super.getImg();
-        final int entryCount = reader.readCompressedInt();
-        for (int i = 0; i < entryCount; i++) {
+        final var entryCount = reader.readCompressedInt();
+        for (var i = 0; i < entryCount; i++) {
             final var child = reader.readExtendedWzData(img, null);
             this.addChild(child);
         }

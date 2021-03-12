@@ -16,8 +16,7 @@ public abstract class WzAbstractData implements WzData {
 
     @Getter
     protected final WzDataType type;
-    @ToString.Exclude
-    @Getter @Setter
+    @Getter @Setter @ToString.Exclude
     protected WzData parent;
     @Getter @Setter
     protected String label;
@@ -47,8 +46,8 @@ public abstract class WzAbstractData implements WzData {
         }
     }
 
-    @Override
     @SuppressWarnings("unchecked")
+    @Override
     public Map<String, WzData> children() throws IOException {
         return Collections.EMPTY_MAP;
     }

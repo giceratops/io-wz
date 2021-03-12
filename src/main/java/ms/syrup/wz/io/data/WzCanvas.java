@@ -6,10 +6,11 @@ import ms.syrup.wz.io.WzFile;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+// TODO split up reading data[], inflating and converting to img
+// TODO pre-parse height/weight without image.
 public class WzCanvas extends WzAbstractExtendedData {
 
     private static final int[] ZAHLEN = new int[]{0x02, 0x01, 0x00, 0x03};

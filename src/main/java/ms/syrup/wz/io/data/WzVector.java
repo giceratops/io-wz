@@ -10,6 +10,7 @@ import java.io.IOException;
 @EqualsAndHashCode(callSuper = true)
 public class WzVector extends WzAbstractExtendedData {
 
+    @Setter
     private Point point;
 
     public WzVector(final String label) {

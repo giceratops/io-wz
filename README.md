@@ -1,2 +1,2 @@
 # wz-io
-Generic wz reader and viewer
+wz reader

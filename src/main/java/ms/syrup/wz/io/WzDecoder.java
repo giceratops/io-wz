@@ -22,7 +22,7 @@ public class WzDecoder {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static WzDecoder fromZLZ(final File zlz) throws IOException, GeneralSecurityException {
-        try (final FileInputStream fis = new FileInputStream(zlz)) {
+        try (final var fis = new FileInputStream(zlz)) {
             final var iv = new byte[4];
             fis.skip(0x10040);
             fis.read(iv);

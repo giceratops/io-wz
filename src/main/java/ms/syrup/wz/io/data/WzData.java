@@ -19,7 +19,7 @@ public interface WzData {
 
     String label();
 
-    WzData label(String label);
+    WzData label(final String label);
 
     String fullPath();
 
@@ -33,7 +33,8 @@ public interface WzData {
         }
     }
 
-    default WzData get(String path) throws IOException {
+    // TODO
+    default WzData get(final String path) throws IOException {
         if (path == null || path.isEmpty()) {
             return this;
         }
@@ -74,17 +75,14 @@ public interface WzData {
         return null;
     }
 
-    default WzData getUnchecked(String path) {
-        try {
-            return this.get(path);
-        } catch (final IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
+    @SneakyThrows
+    default WzData getUnchecked(final String path) {
+        return this.get(path);
     }
 
     @SneakyThrows
     default WzData unlink() {
-        WzData data = this;
+        var data = this;
         while (data instanceof WzUOL) {
             data = this.get(((WzUOL) data).value());
         }
