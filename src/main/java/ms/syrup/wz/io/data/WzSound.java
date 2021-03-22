@@ -38,6 +38,7 @@ public class WzSound extends WzAbstractExtendedData {
 //            else
 //                preparedReader.BaseStream.Position += soundDataLen;
 //
-        throw new UnsupportedOperationException("read is not supported yet.");
+        //throw new UnsupportedOperationException("read is not supported yet.");
+        return this;
     }
 }

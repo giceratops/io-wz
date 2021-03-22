@@ -74,9 +74,6 @@ public class WzCanvas extends WzAbstractExtendedData {
         dec.setInput(data);
         int declen;
 
-
-        System.out.printf("widght=%d height=%d format=%d children=%s %n", this.width, this.height, this.format, this.children);
-
         final var uc = new byte[sizeUncompressed];
         try {
             declen = dec.inflate(uc);

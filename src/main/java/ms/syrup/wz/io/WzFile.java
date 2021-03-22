@@ -80,13 +80,13 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public final String readString(final int length) throws IOException {
-        final byte[] bytes = new byte[length];
+        final var bytes = new byte[length];
         super.read(bytes);
         return new String(bytes);
     }
 
     public final String readNullTerminatedString() throws IOException {
-        final StringBuilder ret = new StringBuilder();
+        final var ret = new StringBuilder();
         byte b;
         while ((b = this.readByte()) != 0) {
             ret.append((char) b);
@@ -139,7 +139,7 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     public String readEncodedString() throws IOException {
         int length = this.readByte();
-        final boolean unicode = length > 0;
+        final var unicode = length > 0;
 
         if (length == (unicode ? Byte.MAX_VALUE : Byte.MIN_VALUE)) {
             length = this.readInt();
@@ -152,14 +152,14 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         } else if (unicode) {
             length *= 2;
         }
-        final byte[] buffer = this.readFully(length);
+        final var buffer = this.readFully(length);
         return unicode ? this.toUnicode(buffer) : this.toAscii(buffer);
     }
 
     private String toUnicode(final byte[] buffer) {
-        int xorByte = 0xAAAA;
-        final char[] charRet = new char[buffer.length / 2];
-        for (int i = 0; i < buffer.length; i++) {
+        var xorByte = 0xAAAA;
+        final var charRet = new char[buffer.length / 2];
+        for (var i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buffer[i] ^ this.decoder.get(i));
         }
         for (int i = 0; i < (buffer.length / 2); i++) {
@@ -171,8 +171,8 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     private String toAscii(final byte[] buffer) {
-        byte xorByte = (byte) 0xAA;
-        for (int i = 0; i < buffer.length; i++) {
+        var xorByte = (byte) 0xAA;
+        for (var i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buffer[i] ^ xorByte ^ this.decoder.get(i));
             xorByte++;
         }
@@ -184,7 +184,7 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public String readEncodedStringAtAndReset(final long offset) throws IOException {
-        final long tmp = this.getFilePointer();
+        final var tmp = this.getFilePointer();
         try {
             return this.readEncodedStringAt(offset);
         } finally {

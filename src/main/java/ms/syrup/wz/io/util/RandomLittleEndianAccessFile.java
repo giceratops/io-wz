@@ -27,8 +27,8 @@ public class RandomLittleEndianAccessFile implements DataInput, DataOutput, Clos
         return this;
     }
 
-    public void skip(final int skip) throws IOException {
-        this.raf.seek(this.getFilePointer() + skip);
+    public RandomLittleEndianAccessFile skip(final int skip) throws IOException {
+        return this.seek(this.getFilePointer() + skip);
     }
 
     @Override
