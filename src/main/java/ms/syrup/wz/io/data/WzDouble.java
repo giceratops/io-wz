@@ -12,10 +12,6 @@ public class WzDouble extends WzAbstractData {
     @Getter @Setter
     private double value;
 
-    public WzDouble(final double value) {
-        this(null, value);
-    }
-
     public WzDouble(final String label, final double value) {
         super(WzDataType.DOUBLE, label);
         this.value = value;

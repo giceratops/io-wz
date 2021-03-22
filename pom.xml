@@ -33,13 +33,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- LookAndFeel 😎 -->
-        <dependency>
-            <groupId>com.github.weisj</groupId>
-            <artifactId>darklaf-core</artifactId>
-            <version>${darklaf.version}</version>
-        </dependency>
-
         <!-- test: junit -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

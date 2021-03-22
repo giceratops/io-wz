@@ -10,8 +10,8 @@ import java.io.IOException;
 @EqualsAndHashCode(callSuper = true)
 public class WzSound extends WzAbstractExtendedData {
 
-    public WzSound(final int offset, final int dataOffset) {
-        super(WzDataType.SOUND, offset, dataOffset);
+    public WzSound(final String label) {
+        super(WzDataType.SOUND, label);
     }
 
     @Override
@@ -38,6 +38,7 @@ public class WzSound extends WzAbstractExtendedData {
 //            else
 //                preparedReader.BaseStream.Position += soundDataLen;
 //
-        throw new UnsupportedOperationException("read is not supported yet.");
+        //throw new UnsupportedOperationException("read is not supported yet.");
+        return this;
     }
 }

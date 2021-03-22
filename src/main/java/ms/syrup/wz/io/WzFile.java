@@ -1,10 +1,15 @@
 package ms.syrup.wz.io;
 
+import lombok.Getter;
 import ms.syrup.wz.io.data.*;
 import ms.syrup.wz.io.util.RandomLittleEndianAccessFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,9 +17,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     private final WzDecoder decoder;
-    private final WzHeader header;
     private final WzDirectory root;
-    private final Lock readLock;
+    @Getter private final WzHeader header;
+    @Getter private final Lock readLock;
 
     public WzFile(final String filePath, final WzDecoder decoder) throws IOException {
         this(new File(filePath), decoder);
@@ -26,18 +31,6 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         this.header = new WzHeader().read(WzFile.this);
         this.root = new WzDirectory(WzFile.this, file.getName());
         this.readLock = new ReentrantLock();
-    }
-
-    public WzDirectory root() {
-        return this.root;
-    }
-
-    public WzHeader header() {
-        return this.header;
-    }
-
-    public Lock readLock() {
-        return this.readLock;
     }
 
     @Override
@@ -66,7 +59,7 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     @Override
-    public String fullPath(){
+    public String fullPath() {
         return this.root.fullPath();
     }
 
@@ -87,13 +80,13 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public final String readString(final int length) throws IOException {
-        final byte[] bytes = new byte[length];
+        final var bytes = new byte[length];
         super.read(bytes);
         return new String(bytes);
     }
 
     public final String readNullTerminatedString() throws IOException {
-        final StringBuilder ret = new StringBuilder();
+        final var ret = new StringBuilder();
         byte b;
         while ((b = this.readByte()) != 0) {
             ret.append((char) b);
@@ -125,9 +118,28 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         return l;
     }
 
+    public byte[] readEncodedBytes(final int length) throws IOException {
+        try (final var baos = new ByteArrayOutputStream()) {
+            var read = 0;
+            while (read < length) {
+                var blockSize = this.readInt();
+                read += Integer.BYTES;
+                if (blockSize > length - read || blockSize < 0) {
+                    throw new IOException("Block size for reading buffer is wrong: " + blockSize);
+                }
+
+                for (var i = 0; i < blockSize; i++) {
+                    baos.write(this.readByte() ^ decoder.get(i));
+                    read++;
+                }
+            }
+            return baos.toByteArray();
+        }
+    }
+
     public String readEncodedString() throws IOException {
         int length = this.readByte();
-        final boolean unicode = length > 0;
+        final var unicode = length > 0;
 
         if (length == (unicode ? Byte.MAX_VALUE : Byte.MIN_VALUE)) {
             length = this.readInt();
@@ -140,14 +152,14 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         } else if (unicode) {
             length *= 2;
         }
-        final byte[] buffer = this.readFully(length);
+        final var buffer = this.readFully(length);
         return unicode ? this.toUnicode(buffer) : this.toAscii(buffer);
     }
 
     private String toUnicode(final byte[] buffer) {
-        int xorByte = 0xAAAA;
-        final char[] charRet = new char[buffer.length / 2];
-        for (int i = 0; i < buffer.length; i++) {
+        var xorByte = 0xAAAA;
+        final var charRet = new char[buffer.length / 2];
+        for (var i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buffer[i] ^ this.decoder.get(i));
         }
         for (int i = 0; i < (buffer.length / 2); i++) {
@@ -159,8 +171,8 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     private String toAscii(final byte[] buffer) {
-        byte xorByte = (byte) 0xAA;
-        for (int i = 0; i < buffer.length; i++) {
+        var xorByte = (byte) 0xAA;
+        for (var i = 0; i < buffer.length; i++) {
             buffer[i] = (byte) (buffer[i] ^ xorByte ^ this.decoder.get(i));
             xorByte++;
         }
@@ -172,7 +184,7 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
     }
 
     public String readEncodedStringAtAndReset(final long offset) throws IOException {
-        final long tmp = this.getFilePointer();
+        final var tmp = this.getFilePointer();
         try {
             return this.readEncodedStringAt(offset);
         } finally {
@@ -182,8 +194,8 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     public String readStringBlock(final long offset) throws IOException {
         return switch (super.readByte()) {
-            case 0, 0x73 -> this.readEncodedString();
-            case 1, 0x1B -> this.readEncodedStringAtAndReset(offset + super.readInt());
+            case 0x00, 0x73 -> this.readEncodedString();
+            case 0x01, 0x1B -> this.readEncodedStringAtAndReset(offset + super.readInt());
             default -> "";
         };
     }
@@ -200,32 +212,22 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         return Integer.toUnsignedLong(offset);
     }
 
-    public WzAbstractData readExtendedWzData(final WzImg img) throws IOException {
-        final var currentFP = (int) this.getFilePointer();
-        final var extendedType = this.readByte();
-        final var dataType = switch (extendedType) {
-            case 0x00, 0x73 -> this.readEncodedString();
-            case 0x01, 0x1B -> this.readEncodedStringAtAndReset(img.offset() + this.readInt());
-            default -> throw new IOException("Unknown dataType byte: " + extendedType);
-        };
-        final var dataOffset = (int) (this.getFilePointer() - currentFP);
+    public WzAbstractData readExtendedWzData(final WzImg img, final String label) throws IOException {
+        final var dataType = readStringBlock(img.dataStart());
+        final var currentFP = this.getFilePointer();
         return switch (dataType) {
-            case "Property" -> new WzProperty(currentFP, dataOffset);
-            case "Canvas" -> new WzCanvas(currentFP, dataOffset);
-            case "Shape2D#Vector2D" -> new WzVector(currentFP, dataOffset);
-            case "Shape2D#Convex2D" -> new WzConvex(currentFP, dataOffset);
-            case "Sound_DX8" -> new WzSound(currentFP, dataOffset);
-            case "UOL" -> {
-                this.readByte();
-                final byte type = this.readByte();
-                final var uol = switch (type) {
-                    case 0 -> this.readEncodedString();
-                    case 1 -> this.readEncodedStringAtAndReset(img.offset() + this.readInt());
-                    default -> throw new IOException("Invalid byte for UOL: " + type);
-                };
-                yield new WzUOL(uol);
-            }
+            case "Property" -> new WzProperty(label).dataStart(currentFP);
+            case "Canvas" -> new WzCanvas(label).dataStart(currentFP);
+            case "Shape2D#Vector2D" -> new WzVector(label).dataStart(currentFP);
+            case "Shape2D#Convex2D" -> new WzConvex(label).dataStart(currentFP);
+            case "Sound_DX8" -> new WzSound(label).dataStart(currentFP);
+            case "UOL" -> new WzUOL(label, this.readByte(), this.readStringBlock(img.dataStart()));
             default -> throw new IOException("Unknown dataType String: " + dataType);
         };
+    }
+
+    @Override
+    public String toString() {
+        return String.format("WzFile(root=%s)", this.root);
     }
 }

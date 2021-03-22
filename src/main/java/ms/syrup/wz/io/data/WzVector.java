@@ -10,10 +10,11 @@ import java.io.IOException;
 @EqualsAndHashCode(callSuper = true)
 public class WzVector extends WzAbstractExtendedData {
 
+    @Setter
     private Point point;
 
-    public WzVector(final int offset, final int dataOffset) {
-        super(WzDataType.VECTOR, offset, dataOffset);
+    public WzVector(final String label) {
+        super(WzDataType.VECTOR, label);
     }
 
     @Override

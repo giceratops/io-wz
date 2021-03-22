@@ -1,31 +1,26 @@
 package ms.syrup.wz.io.data;
 
 import lombok.Getter;
+import lombok.Setter;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class WzAbstractExtendedData extends WzAbstractData {
 
-    @Getter
-    private final long offset;
-    private final int dataOffset;
-    private final Map<String, WzData> children;
+    protected final Map<String, WzData> children;
 
+    @Getter @Setter
+    private long dataStart;
     private boolean read;
 
-    public WzAbstractExtendedData(final WzDataType type, final int offset, final int dataOffset) {
-        this(type, null, null, offset, dataOffset);
+    public WzAbstractExtendedData(final WzDataType type, final String label) {
+        this(type, null, label);
     }
 
-    public WzAbstractExtendedData(final WzDataType type, final WzData parent, final String label, final int offset, final int dataOffset) {
+    public WzAbstractExtendedData(final WzDataType type, final WzData parent, final String label) {
         super(type, parent, label);
-        this.offset = offset;
-        this.dataOffset = dataOffset;
         this.children = new LinkedHashMap<>();
     }
 
@@ -39,7 +34,7 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
         try {
             lock.lock();
             if (!this.read) {
-                this.read(file.seek(this.offset() + this.dataOffset));
+                this.read(file.seek(this.dataStart()));
                 this.read = true;
             }
         } catch (final IOException ioe) {
@@ -51,29 +46,29 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
 
     public void parseChildren(final WzFile reader) throws IOException {
         final var img = this.getImg();
-        final var imgOffset = img.offset();
+        final var imgOffset = img.dataStart();
         final var entryCount = reader.readCompressedInt();
         for (var i = 0; i < entryCount; i++) {
-            final var lbl = reader.readStringBlock(imgOffset);
+            final var label = reader.readStringBlock(imgOffset);
             final var type = reader.readByte();
             final var child = switch (type) {
-                case 0 -> new WzNull();
-                case 2, 11 -> new WzShort(reader.readShort());
-                case 3, 19 -> new WzInteger(reader.readCompressedInt());
-                case 4 -> new WzFloat(reader.readByte() == Byte.MIN_VALUE ? reader.readFloat() : 0f);
-                case 20 -> new WzLong(reader.readLong());
-                case 5 -> new WzDouble(reader.readDouble());
-                case 8 -> new WzString(reader.readStringBlock(imgOffset));
+                case 0 -> new WzNull(label);
+                case 2, 11 -> new WzShort(label, reader.readShort());
+                case 3, 19 -> new WzInteger(label, reader.readCompressedInt());
+                case 4 -> new WzFloat(label, reader.readByte() == Byte.MIN_VALUE ? reader.readFloat() : 0f);
+                case 20 -> new WzLong(label, reader.readLong());
+                case 5 -> new WzDouble(label, reader.readDouble());
+                case 8 -> new WzString(label, reader.readStringBlock(imgOffset));
                 case 9 -> { // extended
                     final var currentFP = (int) reader.getFilePointer();
                     final var blockSize = reader.readInt() + Integer.BYTES;
-                    final var extendedChild = reader.readExtendedWzData(img);
+                    final var extendedChild = reader.readExtendedWzData(img, label);
                     reader.seek(currentFP + blockSize);
-                    yield extendedChild;
+                    yield extendedChild.label(label);
                 }
-                default -> throw new IOException(String.format("Unknown property type at %s: %s - %s", this, type, lbl));
+                default -> throw new IOException(String.format("Unknown property type at %s: %s - %s", this, type, label));
             };
-            this.addChild(child.label(lbl));
+            this.addChild(child);
         }
     }
 

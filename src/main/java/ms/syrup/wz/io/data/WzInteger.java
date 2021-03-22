@@ -12,10 +12,6 @@ public class WzInteger extends WzAbstractData {
     @Getter @Setter
     private int value;
 
-    public WzInteger(final int value) {
-        this(null, value);
-    }
-
     public WzInteger(final String label, final int value) {
         super(WzDataType.INTEGER, label);
         this.value = value;

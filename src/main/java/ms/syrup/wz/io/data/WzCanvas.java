@@ -9,17 +9,20 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+// TODO split up reading data[], inflating and converting to img
+// TODO pre-parse height/weight without image.
 public class WzCanvas extends WzAbstractExtendedData {
 
-    private static final int[] ZAHLEN = new int[]{2, 1, 0, 3};
+    private static final int[] ZAHLEN = new int[]{0x02, 0x01, 0x00, 0x03};
 
     @Getter
     private int height, width;
     private int format;
+    private byte scale;
     private BufferedImage image;
 
-    public WzCanvas(final int offset, final int dataOffset) {
-        super(WzDataType.CANVAS, offset, dataOffset);
+    public WzCanvas(final String label) {
+        super(WzDataType.CANVAS, label);
     }
 
     @Override
@@ -31,33 +34,47 @@ public class WzCanvas extends WzAbstractExtendedData {
 
         this.width = reader.readCompressedInt();
         this.height = reader.readCompressedInt();
-        this.format = reader.readCompressedInt() + reader.readByte();
+        this.format = reader.readCompressedInt();
+        this.scale = reader.readByte();
         reader.readInt();
 
-        int len = reader.readInt() - 1;
+        final var len = reader.readInt();
         reader.readByte();
 
-        byte[] data = new byte[len];
-        reader.readFully(data);
 
         int sizeUncompressed = 0;
         int size8888;
         int maxWriteBuf = 2;
         byte[] writeBuf = new byte[maxWriteBuf];
         switch (this.format) {
-            case 1, 513 -> sizeUncompressed = this.height * this.width * 4;
-            case 2 -> sizeUncompressed = this.height * this.width * 8;
-            case 517 -> sizeUncompressed = this.height * this.width / 128;
+            case 0x1, 0x201 -> sizeUncompressed = this.height * this.width * 4;
+            case 0x2 -> sizeUncompressed = this.height * this.width * 8;
+            case 0x205 -> sizeUncompressed = this.height * this.width / 128;
         }
         size8888 = this.height * this.width * 8;
         if (size8888 > maxWriteBuf) {
             maxWriteBuf = size8888;
             writeBuf = new byte[maxWriteBuf];
         }
-        var dec = new Inflater();
-        dec.setInput(data, 0, data.length);
-        int declen = 0;
-        byte[] uc = new byte[sizeUncompressed];
+
+        final var header = reader.readShort() & 0xFFFF;
+        reader.skip(-2);
+        final var requiresDecryption = header != 0x9C78 && header != 0xDA78 && header != 0x0178 && header != 0x5E78;
+
+        final byte[] data;
+        if (requiresDecryption) {
+            //final var blockSize = reader.readInt();
+            //reader.skip(blockSize);
+            data = reader.readEncodedBytes(len - 1);
+        } else {
+            data = reader.readFully(len - 1);
+        }
+
+        final var dec = new Inflater();
+        dec.setInput(data);
+        int declen;
+
+        final var uc = new byte[sizeUncompressed];
         try {
             declen = dec.inflate(uc);
         } catch (DataFormatException ex) {
