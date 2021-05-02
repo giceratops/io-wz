@@ -2,7 +2,7 @@
 **/env/
 **/local/
 **/target/
-
+**/.DS_Store
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Java template

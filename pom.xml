@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ms.syrup</groupId>
-    <artifactId>wz-io</artifactId>
-    <version>0.0.1</version>
+    <artifactId>io-wz</artifactId>
+    <version>0.0.0</version>
 
     <properties>
-        <java.version>15</java.version>
+        <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- mvn -->
@@ -18,7 +18,6 @@
 
         <!-- versions -->
         <lombok.version>1.18.16</lombok.version>
-        <darklaf.version>2.5.5</darklaf.version>
 
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
         <junit.platform.version>1.5.2</junit.platform.version>
