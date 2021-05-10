@@ -69,4 +69,16 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub project syrup Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/project-syrup/io-wz</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/project-syrup/io-wz.git</developerConnection>
+    </scm>
+
 </project>
