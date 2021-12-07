@@ -1,17 +1,11 @@
 package ms.syrup.wz.io.data;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
 
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 public class WzImg extends WzAbstractExtendedData {
 
-    @Getter
     private final int checksum;
 
     public WzImg(final WzData parent, final String label, final int offset, final int checksum) {
@@ -28,6 +22,10 @@ public class WzImg extends WzAbstractExtendedData {
             this.parseChildren(reader);
         }
         return this;
+    }
+
+    public int checksum() {
+        return this.checksum;
     }
 
 }

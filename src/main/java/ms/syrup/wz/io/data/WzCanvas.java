@@ -1,6 +1,5 @@
 package ms.syrup.wz.io.data;
 
-import lombok.Getter;
 import ms.syrup.wz.io.WzFile;
 
 import java.awt.*;
@@ -15,7 +14,6 @@ public class WzCanvas extends WzAbstractExtendedData {
 
     private static final int[] ZAHLEN = new int[]{0x02, 0x01, 0x00, 0x03};
 
-    @Getter
     private int height, width;
     private int format;
     private byte scale;
@@ -23,6 +21,14 @@ public class WzCanvas extends WzAbstractExtendedData {
 
     public WzCanvas(final String label) {
         super(WzDataType.CANVAS, label);
+    }
+
+    public int height() {
+        return this.height;
+    }
+
+    public int width() {
+        return this.width;
     }
 
     @Override

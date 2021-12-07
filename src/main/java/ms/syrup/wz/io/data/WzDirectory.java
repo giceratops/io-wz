@@ -1,13 +1,9 @@
 package ms.syrup.wz.io.data;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
 
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 public class WzDirectory extends WzAbstractExtendedData {
 
     private final int checksum;

@@ -1,24 +1,15 @@
 package ms.syrup.wz.io.data;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-@ToString
-@EqualsAndHashCode
 public abstract class WzAbstractData implements WzData {
 
-    @Getter
     protected final WzDataType type;
-    @Getter @Setter @ToString.Exclude
     protected WzData parent;
-    @Getter @Setter
     protected String label;
 
     public WzAbstractData(final WzDataType type, final String label) {
@@ -31,13 +22,34 @@ public abstract class WzAbstractData implements WzData {
         this.label = label;
     }
 
+    public WzDataType type() {
+        return this.type;
+    }
+
+    public WzData parent() {
+        return this.parent;
+    }
+
+    public WzAbstractData parent(final WzData parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    public String label() {
+        return this.label;
+    }
+
+    public WzAbstractData label(final String label) {
+        this.label = label;
+        return this;
+    }
+
     @Override
     public WzFile file() {
         return this.parent.file();
     }
 
     @Override
-    @ToString.Include
     public String fullPath() {
         if (this.parent != null && !(this.parent instanceof WzFile)) {
             return String.format("%s/%s", this.parent.fullPath(), this.label());

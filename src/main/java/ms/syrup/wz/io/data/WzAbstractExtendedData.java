@@ -1,17 +1,17 @@
 package ms.syrup.wz.io.data;
 
-import lombok.Getter;
-import lombok.Setter;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class WzAbstractExtendedData extends WzAbstractData {
 
     protected final Map<String, WzData> children;
 
-    @Getter @Setter
     private long dataStart;
     private boolean read;
 
@@ -25,6 +25,15 @@ public abstract class WzAbstractExtendedData extends WzAbstractData {
     }
 
     abstract protected WzAbstractData read(final WzFile readerAtOffset) throws IOException;
+
+    public long dataStart() {
+        return this.dataStart;
+    }
+
+    public WzAbstractExtendedData dataStart(final long dataStart) {
+        this.dataStart = dataStart;
+        return this;
+    }
 
     protected void parseNode() throws IOException {
         if (this.read) return;

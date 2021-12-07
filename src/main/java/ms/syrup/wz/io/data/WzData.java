@@ -1,6 +1,5 @@
 package ms.syrup.wz.io.data;
 
-import lombok.SneakyThrows;
 import ms.syrup.wz.io.WzFile;
 import ms.syrup.wz.io.WzUtils;
 
@@ -47,16 +46,18 @@ public interface WzData {
         }).get(split.right);
     }
 
-    @SneakyThrows
     default WzData getUnchecked(final String path) {
-        return this.get(path);
+        try {
+            return this.get(path);
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
     }
 
-    @SneakyThrows
     default WzData unlink() {
         var data = this;
         while (data instanceof WzUOL) {
-            data = data.parent().get(((WzUOL) data).value());
+            data = data.parent().getUnchecked(((WzUOL) data).value());
         }
         return data;
     }

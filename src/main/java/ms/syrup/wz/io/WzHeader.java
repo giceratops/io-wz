@@ -1,10 +1,7 @@
 package ms.syrup.wz.io;
 
-import lombok.Data;
-
 import java.io.IOException;
 
-@Data
 public class WzHeader {
 
     private short encVersion = 1;
@@ -27,6 +24,34 @@ public class WzHeader {
         this.encVersion = reader.seek(this.fileStart).readShort();
         this.nextVersion();
         return this;
+    }
+
+    public short encVersion() {
+        return this.encVersion;
+    }
+
+    public int fileStart() {
+        return this.fileStart;
+    }
+
+    public long fileSize() {
+        return this.fileSize;
+    }
+
+    public String ident() {
+        return this.ident;
+    }
+
+    public String copyright() {
+        return this.copyright;
+    }
+
+    public short realVersion() {
+        return this.realVersion;
+    }
+
+    public long hash() {
+        return this.hash;
     }
 
     public boolean nextVersion() {

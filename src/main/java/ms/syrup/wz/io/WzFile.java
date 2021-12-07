@@ -1,15 +1,11 @@
 package ms.syrup.wz.io;
 
-import lombok.Getter;
 import ms.syrup.wz.io.data.*;
 import ms.syrup.wz.io.util.RandomLittleEndianAccessFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -18,8 +14,8 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
 
     private final WzDecoder decoder;
     private final WzDirectory root;
-    @Getter private final WzHeader header;
-    @Getter private final Lock readLock;
+    private final WzHeader header;
+    private final Lock readLock;
 
     public WzFile(final String filePath, final WzDecoder decoder) throws IOException {
         this(new File(filePath), decoder);
@@ -31,6 +27,16 @@ public class WzFile extends RandomLittleEndianAccessFile implements WzData {
         this.header = new WzHeader().read(WzFile.this);
         this.root = new WzDirectory(WzFile.this, file.getName());
         this.readLock = new ReentrantLock();
+    }
+
+    public WzHeader header() {
+        return this.header;
+    }
+
+    ;
+
+    public Lock readLock() {
+        return this.readLock;
     }
 
     @Override
