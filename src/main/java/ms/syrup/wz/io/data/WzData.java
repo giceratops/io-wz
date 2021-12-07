@@ -61,4 +61,26 @@ public interface WzData {
         }
         return data;
     }
+
+    @SuppressWarnings("unchecked")
+    default <E extends WzData> E as(final Class<E> eClass) {
+        if (WzUOL.class.equals(eClass)) {
+            return (E) this;
+        } else {
+            return (E) this.unlink();
+        }
+    }
+
+    default <E extends WzData> E get(final Class<E> eClass, final String path) throws IOException {
+        return this.get(path).as(eClass);
+    }
+
+    default <E extends WzData> E getUnchecked(final Class<E> eClass, final String path) {
+        return this.getUnchecked(path).as(eClass);
+    }
+
+    default <E extends WzData> Optional<E> find(final Class<E> eClass, final String path) {
+        return this.find(path)
+                .map((data) -> data.as(eClass));
+    }
 }
