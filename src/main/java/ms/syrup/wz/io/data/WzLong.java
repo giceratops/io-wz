@@ -1,8 +1,10 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class WzLong extends WzAbstractData {
 
-    private long value;
+    @JsonProperty private long value;
 
     public WzLong(final String label, final long value) {
         super(WzDataType.LONG, label);

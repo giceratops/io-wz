@@ -1,6 +1,9 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ms.syrup.wz.io.WzFile;
+import ms.syrup.wz.io.WzUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -8,9 +11,9 @@ import java.util.Map;
 
 public abstract class WzAbstractData implements WzData {
 
-    protected final WzDataType type;
-    protected WzData parent;
-    protected String label;
+    @JsonProperty protected final WzDataType type;
+    @JsonIgnore protected WzData parent;
+    @JsonProperty protected String label;
 
     public WzAbstractData(final WzDataType type, final String label) {
         this(type, null, label);
@@ -73,5 +76,10 @@ public abstract class WzAbstractData implements WzData {
             node = node.parent();
         } while (node != null);
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return WzUtils.toString(this);
     }
 }

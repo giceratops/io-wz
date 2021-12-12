@@ -1,5 +1,7 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ms.syrup.wz.io.WzFile;
 
 import java.io.IOException;
@@ -10,10 +12,10 @@ import java.util.Optional;
 
 public abstract class WzAbstractExtendedData extends WzAbstractData {
 
-    protected final Map<String, WzData> children;
+    @JsonProperty protected final Map<String, WzData> children;
 
-    private long dataStart;
-    private boolean read;
+    @JsonIgnore private long dataStart;
+    @JsonIgnore private boolean read;
 
     public WzAbstractExtendedData(final WzDataType type, final String label) {
         this(type, null, label);

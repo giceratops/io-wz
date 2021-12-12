@@ -1,5 +1,6 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ms.syrup.wz.io.WzFile;
 
 import java.awt.*;
@@ -14,7 +15,7 @@ public class WzCanvas extends WzAbstractExtendedData {
 
     private static final int[] ZAHLEN = new int[]{0x02, 0x01, 0x00, 0x03};
 
-    private int height, width;
+    @JsonProperty private int height, width;
     private int format;
     private byte scale;
     private BufferedImage image;

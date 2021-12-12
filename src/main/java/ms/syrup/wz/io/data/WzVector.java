@@ -1,13 +1,17 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ms.syrup.wz.io.WzFile;
 
 import java.awt.*;
 import java.io.IOException;
 
+@JsonIgnoreProperties("children")
 public class WzVector extends WzAbstractExtendedData {
 
-    private Point point;
+    @JsonProperty private Point point;
 
     public WzVector(final String label) {
         super(WzDataType.VECTOR, label);

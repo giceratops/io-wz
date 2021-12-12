@@ -1,8 +1,10 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class WzNull extends WzAbstractData {
 
-    private Void value;
+    @JsonProperty private Void value;
 
     public WzNull(final String label) {
         super(WzDataType.NULL, label);

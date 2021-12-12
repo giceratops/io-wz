@@ -1,8 +1,10 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class WzInteger extends WzAbstractData {
 
-    private int value;
+    @JsonProperty private int value;
 
     public WzInteger(final String label, final int value) {
         super(WzDataType.INTEGER, label);

@@ -1,8 +1,10 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class WzUOL extends WzAbstractData {
 
-    private String value;
+    @JsonProperty private String value;
 
     public WzUOL(final String label, final byte b, final String value) {
         this(label, value);
