@@ -52,9 +52,9 @@ public class WzUtils {
             .setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
-    public static String toString(final WzData data) {
+    public static String toJson(final WzData data) {
         try {
-            data.children();
+            data.children(); // read children
             return JSON_MAPPER.writeValueAsString(data);
         } catch (final IOException jsonException) {
             return data.toString();

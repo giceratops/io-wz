@@ -80,6 +80,6 @@ public abstract class WzAbstractData implements WzData {
 
     @Override
     public String toString() {
-        return WzUtils.toString(this);
+        return WzUtils.toJson(this);
     }
 }
