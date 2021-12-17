@@ -28,15 +28,7 @@ public class WzUtils {
         return versionHash;
     }
 
-
-    public static class Tuple2<L, R> {
-        public L left;
-        public R right;
-
-        public Tuple2(final L left, final R right) {
-            this.left = left;
-            this.right = right;
-        }
+    public record Tuple2<L, R>(L left, R right) {
     }
 
     public static Tuple2<String, String> split(final String path, final char split) {

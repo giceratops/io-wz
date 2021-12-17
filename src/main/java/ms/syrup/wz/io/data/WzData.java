@@ -1,5 +1,6 @@
 package ms.syrup.wz.io.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import ms.syrup.wz.io.WzFile;
 import ms.syrup.wz.io.WzUtils;
 
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 public interface WzData {
 
+    @JsonProperty
     WzDataType type();
 
     WzFile file();
@@ -17,10 +19,12 @@ public interface WzData {
 
     WzData parent(final WzData parent);
 
+    @JsonProperty
     String label();
 
     WzData label(final String label);
 
+    @JsonProperty
     String fullPath();
 
     Map<String, WzData> children() throws IOException;
@@ -39,11 +43,11 @@ public interface WzData {
         }
 
         final var split = WzUtils.split(path, '/');
-        return (switch (split.left) {
+        return (switch (split.left()) {
             case "." -> this;
             case ".." -> this.parent();
-            default -> this.children().get(split.left);
-        }).get(split.right);
+            default -> this.children().get(split.left());
+        }).get(split.right());
     }
 
     default WzData getUnchecked(final String path) {
